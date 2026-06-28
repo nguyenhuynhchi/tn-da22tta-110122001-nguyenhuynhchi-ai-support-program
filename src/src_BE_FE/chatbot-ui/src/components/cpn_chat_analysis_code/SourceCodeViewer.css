@@ -1,0 +1,109 @@
+.syntax-highlighter-container {
+  display: block !important;
+}
+
+.syntax-highlighter-container {
+  display: block !important;
+}
+
+.syntax-highlighter-container pre {
+  margin: 0 !important;
+  padding: 8px !important;
+  white-space: pre !important;
+  display: block !important;
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  background: transparent !important;
+}
+
+.syntax-highlighter-container code {
+  white-space: pre !important;
+  display: block !important;
+  width: 100% !important;
+  background: transparent !important;
+}
+
+.syntax-highlighter-container span {
+  display: inline !important;
+  white-space: pre !important;
+  background: transparent !important;
+}
+
+.syntax-highlighter-container .react-syntax-highlighter {
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.syntax-highlighter-container .react-syntax-highlighter-line-number {
+  display: inline-block !important;
+  width: 3rem !important;
+  text-align: right !important;
+  padding-right: 0.75rem !important;
+  box-sizing: border-box !important;
+}
+
+.code-error-line {
+  background-color: rgba(239, 68, 68, 0.10) !important;
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #ef4444;
+  text-underline-offset: 4px;
+}
+
+.code-warning-line {
+  background-color: rgba(234, 179, 8, 0.12) !important;
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #eab308;
+  text-underline-offset: 4px;
+}
+
+.syntax-error-token {
+  display: inline;
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+
+/* Underline Styles */
+.underline-solid-red {
+  text-decoration-line: underline;
+  text-decoration-color: #ef4444;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.underline-wavy-red {
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #ef4444;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.underline-dotted-red {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: #ef4444;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.underline-dashed-red {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: #ef4444;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.underline-bg-red {
+  background: linear-gradient(
+    transparent 65%,
+    rgba(239, 68, 68, 0.45) 65%
+  );
+}

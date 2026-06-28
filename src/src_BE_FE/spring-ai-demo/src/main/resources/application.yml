@@ -1,0 +1,47 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /chatbot/api
+
+spring:
+  application:
+    name: spring-ai-demo
+  datasource:
+    url: jdbc:postgresql://postgres:5432/chatbot
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    mongodb:
+      uri: mongodb://root:root@mongodb:27017/chatbot?authSource=admin
+      auto-index-creation: true
+  ai:
+    openai:
+      api-key: ${GPT_API_KEY}
+      chat:
+        options:
+          model: gpt-5.4-mini
+          temperature: 0.2
+#For test
+#      api-key: ${GROQ_API_KEY}
+#      base-url: https://api.groq.com/openai
+#      chat:
+#        options:
+#          model: openai/gpt-oss-20b
+#          temperature: 0.2
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
+moodle:
+  wstoken: "f3b299542fead1b2a08ff4bece914f0e"
+  base-url: http://moodle.local/moodle
+chat-memory:
+  max-message: 20
+

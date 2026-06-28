@@ -1,0 +1,56 @@
+services:
+  mongodb:
+    image: bitnami/mongodb:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=root
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+    restart: always
+
+  postgres:
+    image: postgres:17.5
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=chatbot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build:
+      context: ./spring-ai-demo
+      dockerfile: Dockerfile
+    container_name: chatbot-backend
+    env_file:
+      - ./spring-ai-demo/.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - mongodb
+    extra_hosts:
+      - "moodle.local:host-gateway"
+    restart: always
+
+  frontend:
+    build:
+      context: ./chatbot-ui
+      dockerfile: Dockerfile
+    container_name: chatbot-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  mongodb_data:
+  postgres_data:
