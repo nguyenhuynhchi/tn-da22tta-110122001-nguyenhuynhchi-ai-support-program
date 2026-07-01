@@ -1,16 +1,17 @@
-# AI Support Program for Moodle
+# XÂY DỰNG CHATBOT HỖ TRỢ GIẢI BÀI TẬP LẬP TRÌNH VÀ GỢI Ý LỖI SAI CHO SINH VIÊN NGÀNH CÔNG NGHỆ THÔNG TIN
 
 ## Giới thiệu
 
-AI Support Program for Moodle là hệ thống hỗ trợ học tập được tích hợp vào nền tảng Moodle nhằm hỗ trợ sinh viên trong quá trình thực hành lập trình. Hệ thống cung cấp các chức năng như phân tích mã nguồn, gợi ý hướng dẫn thực hiện bài tập và hỗ trợ hỏi đáp thông qua chatbot AI, giúp nâng cao hiệu quả học tập và khả năng tự giải quyết vấn đề của người học.
+CHATBOT HỖ TRỢ GIẢI BÀI TẬP LẬP TRÌNH VÀ GỢI Ý LỖI SAI CHO SINH VIÊN NGÀNH CÔNG NGHỆ THÔNG TIN là hệ thống hỗ trợ học tập được tích hợp với nền tảng Moodle nhằm hỗ trợ sinh viên trong quá trình thực hành lập trình. Hệ thống cung cấp các chức năng như phân tích mã nguồn, gợi ý hướng dẫn thực hiện bài tập và hỗ trợ hỏi đáp thông qua chatbot AI, giúp nâng cao hiệu quả học tập và khả năng tự giải quyết vấn đề của người học.
 
 ---
 
 ## Mục tiêu
 
-* Tích hợp chatbot AI trực tiếp vào Moodle.
-* Hỗ trợ sinh viên phân tích bài làm và phát hiện lỗi.
+* Tích hợp AI API Key vào hệ thống 
+* Thiết kế backend làm trung gian giữa Moodle và mô hình AI.
 * Cung cấp hướng dẫn thực hiện bài tập theo từng bước.
+* Hỗ trợ sinh viên phân tích bài làm và phát hiện lỗi.
 * Hỗ trợ hỏi đáp liên quan đến bài tập lập trình.
 * Tăng khả năng tự học và giảm thời gian hỗ trợ từ giảng viên.
 
@@ -23,22 +24,25 @@ Hệ thống được xây dựng theo mô hình gồm các thành phần:
 ### Moodle
 
 * Quản lý khóa học, bài tập và người dùng.
-* Tích hợp giao diện chatbot vào trang bài tập lập trình.
+* Mở rộng giao diện bài tập Moodle để thêm nút chuyển hướng đến trang chức năng.
 
 ### Backend AI Service
 
-* Xử lý yêu cầu từ Moodle.
+* Xử lý yêu cầu từ giao diện chức năng.
+* Tương tác với hệ thống Moodle để lấy dữ liệu thông qua Web Service API.
+* Xử lý lọc và chuẩn hóa dữ liệu nhận được từ Moodle phục vụ xây dựng prompt chức năng.  
+* Xây dựng prompt và gửi đến mô hình AI để sinh phản hồi.
 * Quản lý hội thoại và ngữ cảnh trao đổi.
-* Kết nối mô hình AI để sinh phản hồi.
 
 ### Database
 
-* Moodle Database (MySQL): lưu trữ dữ liệu khóa học, bài tập và người dùng.
-* Chat Memory Database (PostgreSQL): lưu trữ lịch sử hội thoại phục vụ duy trì ngữ cảnh.
+* MySQL: được thiết kế sẳn của hệ thống Moodle lưu trữ dữ liệu khóa học, bài tập và người dùng.
+* MongoDB: Lưu trữ phản hồi của AI (nội dung gợi ý, kết quả phân tích) và quản lý các cuộc hội thoại giữa sinh viên và AI.
+* PostgreSQL: lưu trữ lịch sử hội thoại phục vụ duy trì ngữ cảnh (Chatmemory).
 
 ### Docker Environment
 
-* Triển khai Backend AI Service và các dịch vụ liên quan bằng Docker Compose.
+* Dockerize hệ thống backend, frontend và các cơ sở dữ liệu cần thiết bằng Docker Compose.
 
 ---
 
@@ -48,7 +52,6 @@ Trước khi triển khai hệ thống, cần cài đặt:
 
 * XAMPP
 * Docker Desktop
-* Git (khuyến nghị)
 
 ---
 
@@ -104,7 +107,7 @@ moodle.sql
 
 ---
 
-### Bước 4: Khởi động Backend và các dịch vụ AI
+### Bước 4: Khởi động hệ thống (Backend, Frontend, MongoDB và PostgreSQL)
 
 1. Mở Docker Desktop.
 2. Mở Command Prompt hoặc PowerShell.
@@ -124,38 +127,48 @@ Docker sẽ tự động build và khởi động các container cần thiết.
 
 ---
 
-## Truy cập hệ thống
+## Truy cập và sử dụng hệ thống
 
-Sau khi hoàn tất triển khai:
-
-### Moodle
+### Truy cập vào hệ thống Moodle
 
 ```text
 http://localhost/moodle
 ```
 
-### Backend API
+### Đăng nhập vào hệ thống
+
+Sử dụng tài khoản sinh viên đã được cấu hình sẵn:
 
 ```text
-http://localhost:8080
+Tên tài khoản: student-test-01
+Mật khẩu: Student@123
 ```
 
-(Tùy theo cấu hình Docker Compose của dự án)
+### Truy cập khóa học
 
----
+1. Sau khi đăng nhập thành công, chọn một khóa học đã được tạo sẵn trong hệ thống.
+2. Trong khóa học, chọn một bài tập lập trình để thực hiện.
 
-## Dừng hệ thống
+### Truy cập các chức năng hỗ trợ AI
 
-Tại thư mục `src_BE_FE`, chạy:
+Tại trang bài tập lập trình, hệ thống sẽ hiển thị các nút chức năng hỗ trợ AI. Sinh viên có thể lựa chọn một trong các chức năng sau:
 
-```bash
-docker compose down
-```
+#### Chatbot gợi ý và hỏi đáp
 
-Lệnh trên sẽ dừng toàn bộ container của hệ thống.
+Cho phép sinh viên:
 
----
+* Nhận gợi ý từng bước để thực hiện bài tập.
+* Đặt câu hỏi liên quan đến yêu cầu đề bài.
+* Trao đổi với AI trong suốt quá trình thực hiện bài tập.
 
-## Tác giả
+#### Phân tích và sửa lỗi
 
-Khóa luận tốt nghiệp: Tích hợp Chatbot AI hỗ trợ thực hành lập trình trên nền tảng Moodle.
+Cho phép sinh viên:
+
+* Tải lên bài làm hoặc mã nguồn cần phân tích.
+* Nhận kết quả phân tích từ AI.
+* Xem các lỗi được phát hiện trong bài làm.
+* Nhận các gợi ý cải thiện và chỉnh sửa mã nguồn.
+* Tiếp tục trao đổi với AI về kết quả phân tích.
+
+
