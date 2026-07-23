@@ -38,9 +38,12 @@ public class ChatController {
     MoodleService moodleService;
     ObjectMapper objectMapper;
 
-    @PostMapping("/chat-suggest")
-    public String chatSuggest(@RequestBody ChatRequest request) throws IOException {
-        return chatbotService.createSuggestMessage(request);
+    @PostMapping(value = "/chat-suggest", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String chatSuggest(
+        @RequestPart("request") String requestJson,
+        @RequestPart(value = "images", required = false) List<MultipartFile> images) throws IOException {
+        ChatRequest request = objectMapper.readValue(requestJson, ChatRequest.class);
+        return chatbotService.createSuggestMessage(request, images);
     }
 
     @PostMapping(value = "/chat-analysis", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

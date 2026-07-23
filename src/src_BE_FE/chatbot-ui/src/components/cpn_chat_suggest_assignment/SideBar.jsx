@@ -71,7 +71,7 @@ function SideBar({ info, suggest }) {
 
       <div className="mt-6 text-[20px] font-semibold leading-7 text-slate-900">💡 Gợi ý cách làm</div>
       <div className="mt-3 rounded-md border border-blue-100 border-l-4 border-l-blue-500 bg-blue-50/70 p-4 text-[14px] leading-6 text-slate-800 shadow-sm">
-        {renderSuggestSection() || <p>Chưa có gợi ý</p>}
+        {renderSuggestSection() || <p>Đang sinh gợi ý ...</p>}
       </div>
     </div>
   );

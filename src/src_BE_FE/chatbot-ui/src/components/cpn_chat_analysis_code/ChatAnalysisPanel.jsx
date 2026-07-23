@@ -347,7 +347,7 @@ function ChatAnalysisPanel({ title, courseId, assignmentId, cmid, userId, isDraf
               >
                 <div
                   className={`rounded-3xl px-4 py-3 text-sm shadow-sm text-left ${msg.role === "user"
-                    ? "max-w-[70%] bg-slate-900 text-white"
+                    ? "max-w-[70%]  bg-[#0F6CBF] border border-slate-500 text-white"
                     : "w-full bg-slate-100 text-slate-900"
                     }`}
                 >

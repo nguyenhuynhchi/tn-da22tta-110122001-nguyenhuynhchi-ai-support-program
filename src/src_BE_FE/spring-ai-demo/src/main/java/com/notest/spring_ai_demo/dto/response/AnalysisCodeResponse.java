@@ -41,7 +41,8 @@ public record AnalysisCodeResponse(
     public record RubricEvaluation(
         List<String> missingCriteria,
         int estimatedScore,
-        int maximumScore
+        int maximumScore,
+        String rubricChecklist
     ){}
 
     public record ProjectRelationshipFeedbackResponse(

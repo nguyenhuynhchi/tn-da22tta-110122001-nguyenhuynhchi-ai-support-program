@@ -90,9 +90,29 @@ export const chatbotApi = {
    * @param {string} userId - User ID
    * @returns {Promise<string|Object>} Raw chatbot response
    */
-  sendSuggestMessage: async (message, cmid, userId) => {
-    const response = await httpClient.post(ENDPOINTS.CHAT_SUGGEST, { message, cmid, userId });
-    return typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+  sendSuggestMessage: async (message, cmid, userId, images = []) => {
+    const formData = new FormData();
+
+    formData.append(
+      "request",
+      JSON.stringify({ message, cmid, userId })
+    );
+
+    images.forEach((image) => {
+      formData.append("images", image);
+    });
+
+    const response = await httpClient.post(
+      ENDPOINTS.CHAT_SUGGEST,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data;
   },
 
   /**

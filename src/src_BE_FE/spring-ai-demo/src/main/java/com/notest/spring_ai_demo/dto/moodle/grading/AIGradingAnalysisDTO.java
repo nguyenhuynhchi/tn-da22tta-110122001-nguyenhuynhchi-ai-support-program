@@ -23,5 +23,6 @@ public class AIGradingAnalysisDTO {
 
     List<String> missingCriteria;
     Integer estimatedScore;
+    String rubricChecklist;
 
 }

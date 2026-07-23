@@ -4123,6 +4123,7 @@ class assign {
 
         $estimatedscore = null;
         $missingcriteria = [];
+        $rubricchecklist = '';
 
         try {
             $query = http_build_query([
@@ -4156,10 +4157,10 @@ class assign {
                     if (!is_array($item)) {
                         continue;
                     }
-
                     if ((string)($item['userId'] ?? '') === (string)$userid) {
                         $estimatedscore = $item['estimatedScore'] ?? null;
                         $missingcriteria = $item['missingCriteria'] ?? [];
+                        $rubricchecklist = $item['rubricChecklist'] ?? '';
                         break;
                     }
                 }
@@ -4178,22 +4179,69 @@ class assign {
 
         $o .= html_writer::tag(
             'h4',
-            'Đánh giá từ AI'
+            'AI Đánh giá theo tiêu chí'
+        );
+
+        if (!empty($rubricchecklist)) {
+            $o .= html_writer::div(
+                $rubricchecklist,
+                'ai-rubric-checklist mb-3'
+            );
+        }
+
+        $o .= html_writer::start_div(
+            'd-flex justify-content-between align-items-start mt-3'
+        );
+
+        $o .= html_writer::start_div('', [
+            'style' => 'flex: 0 0 70%; padding-right:20px;'
+        ]);
+
+        $o .= html_writer::tag('h5', 'Tiêu chí còn thiếu hoặc lỗi khác');
+
+        if (!empty($missingcriteria)) {
+
+            $o .= html_writer::start_tag('ul');
+
+            foreach ($missingcriteria as $criteria) {
+                $o .= html_writer::tag('li', s($criteria));
+            }
+
+            $o .= html_writer::end_tag('ul');
+
+        } else {
+
+            $o .= html_writer::tag(
+                'p',
+                'Bài làm đạt yêu cầu'
+            );
+        }
+
+        $o .= html_writer::end_div();
+
+        $o .= html_writer::start_div('', [
+            'style' => 'flex:0 0 30%; text-align:center;'
+        ]);
+
+        $o .= html_writer::tag(
+            'h5',
+            'Điểm đề xuất'
         );
 
         $o .= html_writer::tag(
-            'p',
-            '<strong>Điểm AI đề xuất:</strong> ' .
-            ($estimatedscore !== null ? $estimatedscore . '/100' : 'Không có')
+            'div',
+            $estimatedscore !== null ? '<strong style="font-size:22px;">' . $estimatedscore . '/100</strong>' : 'Không có',
+            ['style' => 'margin-bottom:15px;']
         );
 
         if ($estimatedscore !== null) {
+
             $o .= html_writer::tag(
                 'button',
                 'Dùng điểm này',
                 [
                     'type' => 'button',
-                    'class' => 'btn btn-primary btn-sm mb-3',
+                    'class' => 'btn btn-primary',
                     'id' => 'use-ai-score-btn',
                     'data-score' => $estimatedscore
                 ]
@@ -4203,7 +4251,6 @@ class assign {
                 document.addEventListener('click', function(e) {
                     if (e.target && e.target.id === 'use-ai-score-btn') {
                         var score = e.target.getAttribute('data-score');
-
                         var gradeInput = document.querySelector('input[name=\"grade\"]');
 
                         if (gradeInput) {
@@ -4216,32 +4263,9 @@ class assign {
             ");
         }
 
-        $o .= html_writer::tag(
-            'h5',
-            'Tiêu chí còn thiếu'
-        );
+        $o .= html_writer::end_div();
 
-        if (!empty($missingcriteria)) {
-
-            $o .= html_writer::start_tag('ul');
-
-            foreach ($missingcriteria as $criteria) {
-
-                $o .= html_writer::tag(
-                    'li',
-                    s($criteria)
-                );
-            }
-
-            $o .= html_writer::end_tag('ul');
-
-        } else {
-
-            $o .= html_writer::tag(
-                'p',
-                'Không có'
-            );
-        }
+        $o .= html_writer::end_div();
 
         $o .= html_writer::end_div();
 

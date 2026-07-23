@@ -14,9 +14,11 @@ function ChatContent({ userId, cmid, nextQuestions = [] }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [dynamicNextQuestions, setDynamicNextQuestions] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
   const chatEndRef = useRef(null);
   const lastUserMessageRef = useRef(null);
   const textareaRef = useRef(null);
+  const imageInputRef = useRef(null);
 
   const scrollToBottom = (behavior = "smooth") => {
     requestAnimationFrame(() => {
@@ -58,6 +60,31 @@ function ChatContent({ userId, cmid, nextQuestions = [] }) {
       content: contentPart.trim(),
       suggestions,
     };
+  };
+
+  const handleSelectImages = (event) => {
+    const files = Array.from(event.target.files || []);
+
+    if (files.length === 0) return;
+
+    const newImages = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setSelectedImages((prev) => [...prev, ...newImages]);
+    event.target.value = "";
+  };
+
+  const removeImage = (index) => {
+    setSelectedImages((prev) => {
+      const imageToRemove = prev[index];
+      if (imageToRemove?.preview) {
+        URL.revokeObjectURL(imageToRemove.preview);
+      }
+
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   useEffect(() => {
@@ -135,10 +162,17 @@ function ChatContent({ userId, cmid, nextQuestions = [] }) {
   }, [input]);
 
   const sendMessage = async (textParam) => {
-    const messageText = typeof textParam === "string" ? textParam.trim() : input.trim();
-    if (!messageText || sending) return;
+    const messageText =
+      typeof textParam === "string" ? textParam.trim() : input.trim();
+    const currentImages = [...selectedImages];
 
-    const userMessage = { role: "user", content: messageText };
+    if ((!messageText && currentImages.length === 0) || sending) return;
+
+    const userMessage = {
+      role: "user",
+      content: messageText,
+      images: currentImages,
+    };
     const loadingMessage = {
       role: "ai",
       content: "Đang phản hồi...",
@@ -147,6 +181,7 @@ function ChatContent({ userId, cmid, nextQuestions = [] }) {
 
     setMessages((prev) => [...prev, userMessage, loadingMessage]);
     setInput("");
+    setSelectedImages([]);
     setDynamicNextQuestions([]);
     setSending(true);
 
@@ -155,7 +190,12 @@ function ChatContent({ userId, cmid, nextQuestions = [] }) {
     }, 0);
 
     try {
-      const rawText = await chatbotApi.sendSuggestMessage(messageText, cmid, userId);
+      const rawText = await chatbotApi.sendSuggestMessage(
+        messageText,
+        cmid,
+        userId,
+        currentImages.map((img) => img.file)
+      );
       let aiContent = rawText;
 
       try {
@@ -260,8 +300,25 @@ function ChatContent({ userId, cmid, nextQuestions = [] }) {
                       <MarkdownMessage content={msg.content} />
                     )
                   ) : (
-                    <div className="text-[14px] leading-6 text-left">
-                      {msg.content}
+                    <div className="space-y-2 text-left">
+                      {msg.images?.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {msg.images.map((img, imageIndex) => (
+                            <img
+                              key={imageIndex}
+                              src={img.preview}
+                              alt=""
+                              className="max-h-48 rounded-xl border border-slate-300 object-cover"
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      {msg.content && (
+                        <div className="text-[14px] leading-6">
+                          {msg.content}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -299,28 +356,72 @@ function ChatContent({ userId, cmid, nextQuestions = [] }) {
 
       {/* Input */}
       <div className="border-t border-slate-200 bg-slate-50 px-6 py-2">
-        <div className="mx-auto flex w-full max-w-4xl items-end gap-3 rounded-2xl border border-slate-300 bg-white p-2">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            rows={1}
-            placeholder="Nhập câu hỏi..."
-            className="flex-1 resize-none overflow-y-hidden rounded-2xl border border-slate-300 bg-white px-4 py-2 text-[14px] leading-6 text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-          />
+        <div className="mx-auto w-full max-w-4xl rounded-2xl border border-slate-300 bg-white p-2">
+          {selectedImages.length > 0 && (
+            <div className="mb-2 flex gap-2 overflow-x-auto">
+              {selectedImages.map((img, index) => (
+                <div
+                  key={index}
+                  className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border border-slate-300 bg-slate-100"
+                >
+                  <img
+                    src={img.preview}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
 
-          <button
-            onClick={sendMessage}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-white"
-          >
-            𖤂
-          </button>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs shadow"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-end gap-3">
+            <input
+              ref={imageInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              onChange={handleSelectImages}
+            />
+
+            <button
+              type="button"
+              onClick={() => imageInputRef.current?.click()}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-2xl text-slate-500 hover:bg-slate-100"
+            >
+              +
+            </button>
+
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              rows={1}
+              placeholder="Nhập câu hỏi..."
+              className="flex-1 resize-none overflow-y-hidden rounded-2xl border border-slate-300 bg-white px-4 py-2 text-[14px] leading-6 text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+
+            <button
+              onClick={sendMessage}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-white"
+            >
+              𖤂
+            </button>
+          </div>
         </div>
       </div>
     </div>

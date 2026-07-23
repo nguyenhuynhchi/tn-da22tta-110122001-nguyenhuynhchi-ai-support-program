@@ -100,7 +100,8 @@ JSON format:
     {{
       "missingCriteria": [],
       "estimatedScore": ,
-      "maximumScore":
+      "maximumScore": ,
+      "rubricChecklist":
     }}
   "projectRelationshipFeedback": {{
     "hasRelationship": false,
@@ -135,6 +136,9 @@ Syntax analysis rules:
 
   - syntaxStatus.errorToken must contain the shortest code fragment directly causing the issue.
   - syntaxStatus.errorToken should match the submitted source code exactly when possible.
+  - syntaxStatus.status may be "WARNING" when no syntax error exists but a concrete logic, implementation, completeness, redundancy, or requirement-related issue is detected.
+  - Code that compiles successfully may still receive "LOGIC_WARNING".
+  - Do not generate warnings based only on coding style preferences.
   - If no issue exists:
     "syntaxStatus": null
   - Report syntaxStatus only when a concrete syntax, compilation, import, type, runtime, or logic issue can be identified from the submitted code.
@@ -152,7 +156,9 @@ Rules:
   - If there are no criterion-related issues but there are non-critical improvements, put them in "improvementSuggestions" instead of "mainIssues".
   - "improvementSuggestions" may include minor code quality suggestions only when they do not change the grading result.
   - Avoid unrelated improvements.
-  - "missingRequirements" should contain all missing or incorrect project-level requirements detected from the grading criteria, do not include duplicate items.
+  - "missingRequirements" should contain all missing, incomplete, or incorrect project-level requirements detected from:
+    - grading criteria when available
+    - otherwise Assignment Data requirements
   - If files are independent, "projectRelationshipFeedback.hasRelationship" must be false.
   - If files are independent and there are no missing requirements, keep projectIssues and "projectSuggestions" empty.
   - If required classes/features are missing, list them in "missingRequirements".
@@ -164,6 +170,46 @@ Rules:
     - actual implemented behavior
     - assignment requirements
   - Do not merge these two concepts.
+
+rubricChecklist rules:
+  - rubricChecklist must be an HTML <table> without a <caption>.
+  - Generate rubricChecklist only when Assignment Data contains grading criteria.
+  - If no grading criteria are available:
+    - rubricChecklist must be null.
+  - Preserve every grading criterion exactly as it appears in Assignment Data.
+  - Do not rewrite, summarize, merge, split, or paraphrase any criterion description.
+  - Keep the original criterion order from Assignment Data.
+  - Do not add, remove, or invent any rubric rows.
+  - The table must contain the following columns in order:
+    - STT
+    - Tiêu chí
+    - Điểm
+  - The Điểm column must display the awarded score in the format:
+    - achievedScore/maximumScore
+  - Examples:
+    - 10/10
+    - 5/8
+    - 0/5
+  - Apply the following HTML formatting to the score:
+    - Full score (achievedScore = maximumScore): green text.
+    - Partial score (0 < achievedScore < maximumScore): bold black text.
+    - Zero score (achievedScore = 0): bold red text.
+  - The awarded score for each criterion must reflect the actual evaluation result.
+  - The sum of all achievedScore values must exactly equal estimatedScore.
+  - The sum of all maximumScore values must exactly equal maximumScore.
+  - Every criterion with achievedScore less than maximumScore may appear in missingCriteria if the missing or incorrect implementation affects the assignment requirements.
+  - Every criterion with achievedScore equal to maximumScore must not appear in missingCriteria.
+  - Return only valid HTML.
+  - The generated table must include visible borders:
+    - table, th, and td must use a 1px solid border.
+    - Use border-collapse: collapse.
+    - Add approximately 6px padding inside each table cell.
+    - Vertically align cell contents to the middle.
+    - Left-align the criterion text and center-align the STT and score columns.
+
+Consistency rules:
+  - missingCriteria, rubricChecklist, estimatedScore, and maximumScore must describe the same evaluation result.
+  - Never allow any contradiction between rubricChecklist, missingCriteria, estimatedScore, and maximumScore.
 
 Pseudocode rules:
  - pseudocode must describe only the logic that currently exists in the submitted file.
@@ -200,24 +246,36 @@ Project relationship rules:
  - Independent files solving different tasks should not be considered related.
 
 rubricEvaluation rules:
-  rubricEvaluation represents the overall rubric-based assessment of the entire submission.
+  RubricEvaluation represents the overall assignment-completeness assessment of the entire submission.
   It must be generated from all submitted files combined.
-  Use grading criteria when available.
-  If no grading criteria can be identified from Assignment Data:
-    - missingCriteria must be null
+  If grading criteria are available:
+    - use the grading criteria as the primary evaluation source.
+    - missingCriteria must contain missing, incomplete, or incorrectly implemented grading criteria.
+  If grading criteria are not available:
+    - use Assignment Data requirements as the evaluation source.
+    - missingCriteria must contain missing, incomplete, or incorrectly implemented assignment requirements.
+  EstimatedScore and maximumScore may be generated only when grading criteria provide enough information to estimate scoring.
+  If scoring information is unavailable:
     - estimatedScore must be null
     - maximumScore must be null
+    - estimatedScore and maximumScore must be null when unavailable; never return 0.
 
 missingCriteria rules:
-  missingCriteria must contain only criteria that are:
+  missingCriteria must contain only assignment requirements or grading criteria that are:
     - missing
     - incomplete
     - implemented incorrectly
+  The source of evaluation depends on available data:
+    - If grading criteria exist, evaluate against grading criteria.
+    - Otherwise, evaluate against Assignment Data requirements.
   Each item must clearly indicate:
-    - what criterion is missing or incorrect
-    - which file is responsible for the issue
-  If the issue is caused by a missing file, explicitly mention the missing file or class.
+    - what requirement or criterion is missing, incomplete, or incorrect
+    - which file is responsible for the issue when applicable
+  If the issue is caused by a missing file, explicitly mention the missing file, class, module, function, page, or other required component.
   Use short and direct descriptions.
+  If multiple files contribute to the same missing requirement, include it only once.
+  If there are no missing, incomplete, or incorrect requirements:
+    - missingCriteria must be an empty array []
 
 projectSuggestions rules:
   - projectSuggestions must contain only corrective suggestions for missing, incomplete, or incorrectly implemented assignment requirements.
@@ -273,3 +331,4 @@ maximumScore rules:
     - maximumScore must be null
   If grading criteria are not available:
     - maximumScore must be null
+  If a value is unknown or unavailable, return null, not 0.

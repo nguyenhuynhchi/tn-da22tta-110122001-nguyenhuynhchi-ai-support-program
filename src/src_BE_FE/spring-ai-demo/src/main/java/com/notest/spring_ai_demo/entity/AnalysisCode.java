@@ -54,6 +54,7 @@ public class AnalysisCode {
         List<String> missingCriteria;
         int estimatedScore;
         int maximumScore;
+        String rubricChecklist;
     }
 
     @Data

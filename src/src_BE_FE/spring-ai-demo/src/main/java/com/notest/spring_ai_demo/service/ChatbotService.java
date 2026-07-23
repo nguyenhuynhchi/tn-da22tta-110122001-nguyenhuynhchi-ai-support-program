@@ -76,7 +76,7 @@ public class ChatbotService {
     AnalysisCodeRepository analysisCodeRepository;
     JdbcChatMemoryRepository jdbcChatMemoryRepository;
 
-    public String createSuggestMessage(ChatRequest request) throws IOException {
+    public String createSuggestMessage(ChatRequest request, List<MultipartFile> images) throws IOException {
         String conversationId = buildConversationId(request.userId(), request.cmid(),
             ConversationType.SUGGESTION);
         checkConversationExists(conversationId, request, ConversationType.SUGGESTION);
@@ -103,7 +103,7 @@ public class ChatbotService {
                 "suggestion", suggestionResponse
             ));
 
-        UserMessage userMessage = new UserMessage(request.message());
+        UserMessage userMessage = buildUserMessageWithImages(request.message(), images);
 
         Prompt prompt = new Prompt(systemMessage, userMessage);
 
@@ -395,8 +395,6 @@ public class ChatbotService {
             request.assignmentId(),
             request.userId()
         ) : buildSourceCodeFromFiles(files);
-
-//        System.out.println("source code: " + sourceCode);
 
         PromptVersion version = PromptVersion.ANALYSIS_CODE_HAS_PSEUDOCODE;
         Resource resource = resourceLoader.getResource("classpath:" + version.getPath());

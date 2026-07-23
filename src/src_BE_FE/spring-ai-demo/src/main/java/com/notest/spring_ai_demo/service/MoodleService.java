@@ -443,11 +443,15 @@ public class MoodleService {
 
             List<String> missingCriteria = null;
             Integer estimatedScore = null;
+            String rubricChecklist = null;
 
             if (analysis != null && analysis.getRubricEvaluation() != null) {
                 missingCriteria = analysis.getRubricEvaluation().getMissingCriteria();
                 estimatedScore = analysis.getRubricEvaluation().getEstimatedScore();
+                rubricChecklist = analysis.getRubricEvaluation().getRubricChecklist();
             }
+
+
 
             result.add(AIGradingAnalysisDTO.builder()
                 .userId(userId)
@@ -455,6 +459,7 @@ public class MoodleService {
                 .files(files)
                 .missingCriteria(missingCriteria)
                 .estimatedScore(estimatedScore)
+                .rubricChecklist(rubricChecklist)
                 .build());
         }
 

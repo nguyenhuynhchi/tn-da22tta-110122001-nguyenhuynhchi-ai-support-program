@@ -157,6 +157,7 @@ RESPONSE FORMAT:
   5. "nextQuestions"
      - Return exactly 3 short follow-up questions.
      - Questions should encourage deeper understanding.
+     - Use plain text only. No Markdown.
 
 STRICT JSON RULES:
   - The values for:

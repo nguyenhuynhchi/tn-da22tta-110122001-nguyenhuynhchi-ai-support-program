@@ -42,9 +42,10 @@ MARKDOWN AND ASCII FORMATTING RULES:
       - database relationship
       - simple diagrams
       - input/output flow
-    - For pseudocode, use a fenced code block with `text`.
-    - For folder structure, use a fenced code block with `text`.
-    - For diagrams or flowcharts, use a fenced code block with `text`.
+    - For pseudocode, use fenced code blocks without a language identifier.
+    - For folder structures, use fenced code blocks without a language identifier.
+    - For diagrams, flowcharts, relationships, and ASCII content, use fenced code blocks without a language identifier.
+    - Do not specify languages such as text, plaintext, txt, ascii, or any other code-block language label for ASCII content.
     - Keep ASCII diagrams simple and readable.
     - Do not use complex box-drawing characters if plain ASCII is enough.
     - Prefer arrows such as `->`, `=>`, and indentation.

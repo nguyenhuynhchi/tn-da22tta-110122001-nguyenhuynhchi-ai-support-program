@@ -1,3 +1,5 @@
+name: chatbot-system
+
 services:
   mongodb:
     image: bitnami/mongodb:latest
