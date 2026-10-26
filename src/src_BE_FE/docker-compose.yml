@@ -2,7 +2,7 @@ name: chatbot-system
 
 services:
   mongodb:
-    image: bitnami/mongodb:latest
+    image: soldevelo/mongodb:latest
     container_name: mongodb
     ports:
       - "27017:27017"
